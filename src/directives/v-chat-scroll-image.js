@@ -27,7 +27,7 @@ const imageLoaded = (src, callback = () => {}) => {
   }
 }
 
-const allImagesLoaded = (el) => {
+const allImagesLoaded = (el, config) => {
   if (typeof el.querySelectorAll !== 'function') return;
   const imgs = el.querySelectorAll('img');
   imgs.forEach(img => {
@@ -75,7 +75,7 @@ const vScrollDown = {
       if (config.image) {
         e.forEach(function(mutation) {
           if (mutation.addedNodes.length != 1) return;
-          mutation.addedNodes.forEach(allImagesLoaded);
+          mutation.addedNodes.forEach((node) => { allImagesLoaded(node, config); });
         });
       }
 
@@ -86,7 +86,9 @@ const vScrollDown = {
   inserted: function inserted(el, binding) {
     var config = binding.value || {};
     scrollToBottom(el, config.smooth);
-    allImagesLoaded(el);
+    if (config.image) {
+      allImagesLoaded(el, config);
+    }
   }
 };
 

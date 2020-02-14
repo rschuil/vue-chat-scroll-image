@@ -35,7 +35,7 @@ var imageLoaded = function imageLoaded(src) {
   }
 };
 
-var allImagesLoaded = function allImagesLoaded(el) {
+var allImagesLoaded = function allImagesLoaded(el, config) {
   if (typeof el.querySelectorAll !== 'function') return;
   var imgs = el.querySelectorAll('img');
   imgs.forEach(function (img) {
@@ -81,7 +81,9 @@ var vScrollDown = {
       if (config.image) {
         e.forEach(function (mutation) {
           if (mutation.addedNodes.length != 1) return;
-          mutation.addedNodes.forEach(allImagesLoaded);
+          mutation.addedNodes.forEach(function (node) {
+            allImagesLoaded(node, config);
+          });
         });
       }
 
@@ -91,7 +93,9 @@ var vScrollDown = {
   inserted: function inserted(el, binding) {
     var config = binding.value || {};
     scrollToBottom(el, config.smooth);
-    allImagesLoaded(el);
+    if (config.image) {
+      allImagesLoaded(el, config);
+    }
   }
 };
 
