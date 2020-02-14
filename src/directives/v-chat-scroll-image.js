@@ -81,7 +81,10 @@ const vScrollDown = {
     })).observe(el, { childList: true, subtree: true });
 
   },
-  inserted: scrollToBottom
+  inserted: function inserted(el, binding) {
+    var config = binding.value || {};
+    scrollToBottom(el, config.smooth);
+  }
 };
 
 export default vScrollDown;
