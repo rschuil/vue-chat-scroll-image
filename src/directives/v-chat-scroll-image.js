@@ -27,6 +27,16 @@ const imageLoaded = (src, callback = () => {}) => {
   }
 }
 
+const allImagesLoaded = (node) => {
+  if (typeof node.querySelectorAll !== 'function') return;
+  const imgs = node.querySelectorAll('img');
+  imgs.forEach(img => {
+    imageLoaded(img.getAttribute('src'), () => {
+      scrollToBottom(el, config.smooth);
+    });
+  });
+}
+
 const emit = (vnode, name, data) => {
   var handlers = (vnode.data && vnode.data.on) ||
     (vnode.componentOptions && vnode.componentOptions.listeners);
@@ -65,15 +75,7 @@ const vScrollDown = {
       if (config.image) {
         e.forEach(function(mutation) {
           if (mutation.addedNodes.length != 1) return;
-          mutation.addedNodes.forEach(node => {
-            if (typeof node.querySelectorAll !== 'function') return;
-            const imgs = node.querySelectorAll('img');
-            imgs.forEach(img => {
-              imageLoaded(img.getAttribute('src'), () => {
-                scrollToBottom(el, config.smooth);
-              });
-            });
-          });
+          mutation.addedNodes.forEach(allImagesLoaded);
         });
       }
 
@@ -84,6 +86,7 @@ const vScrollDown = {
   inserted: function inserted(el, binding) {
     var config = binding.value || {};
     scrollToBottom(el, config.smooth);
+    allImagesLoaded(el);
   }
 };
 
