@@ -5,38 +5,6 @@
  * @file v-chat-scroll  directive definition
  */
 
-const scrollToBottom = (el, smooth) => {
-  if (typeof el.scroll === "function") {
-    el.scroll({
-      top: el.scrollHeight,
-      behavior: smooth ? 'smooth' : 'instant'
-    });
-  } else {
-    el.scrollTop = el.scrollHeight;
-  }
-};
-
-const imageLoaded = (src, callback = () => {}) => {
-  if (typeof callback !== 'function' || (typeof src !== 'string' || !src)) return;
-  const image = new Image();
-  image.src = src;
-  if (image.complete) {
-    callback();
-  } else {
-    image.onload = callback;
-  }
-}
-
-const allImagesLoaded = (el, config) => {
-  if (typeof el.querySelectorAll !== 'function') return;
-  const imgs = el.querySelectorAll('img');
-  imgs.forEach(img => {
-    imageLoaded(img.getAttribute('src'), () => {
-      scrollToBottom(el, config.smooth);
-    });
-  });
-}
-
 const emit = (vnode, name, data) => {
   var handlers = (vnode.data && vnode.data.on) ||
     (vnode.componentOptions && vnode.componentOptions.listeners);
@@ -61,34 +29,16 @@ const vScrollDown = {
       }, 200);
     });
 
-    (new MutationObserver(e => {
-      let config = binding.value || {};
-      let pause = config.always === false && scrolled;
-
-      if (config.scrollonremoved) {
-        if (pause || e[e.length - 1].addedNodes.length != 1 && e[e.length - 1].removedNodes.length != 1) 
-        return;
-      } else {
-        if (pause || e[e.length - 1].addedNodes.length != 1) return;
+    const ro = new ResizeObserver(function(e) {
+      if (!scrolled) {
+        el.scrollTop = el.scrollHeight - el.clientHeight;
       }
-
-      if (config.image) {
-        e.forEach(function(mutation) {
-          if (mutation.addedNodes.length != 1) return;
-          mutation.addedNodes.forEach((node) => { allImagesLoaded(node, config); });
-        });
-      }
-
-      scrollToBottom(el, config.smooth);
-    })).observe(el, { childList: true, subtree: true });
-
+    });
+    ro.observe(el);
+    ro.observe(el.querySelector('ul'));
   },
   inserted: function inserted(el, binding) {
-    var config = binding.value || {};
-    scrollToBottom(el, config.smooth);
-    if (config.image) {
-      allImagesLoaded(el, config);
-    }
+    el.scrollTop = el.scrollHeight - el.clientHeight;
   }
 };
 
