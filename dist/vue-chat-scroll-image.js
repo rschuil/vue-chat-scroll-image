@@ -35,9 +35,9 @@ var imageLoaded = function imageLoaded(src) {
   }
 };
 
-var allImagesLoaded = function allImagesLoaded(node) {
-  if (typeof node.querySelectorAll !== 'function') return;
-  var imgs = node.querySelectorAll('img');
+var allImagesLoaded = function allImagesLoaded(el) {
+  if (typeof el.querySelectorAll !== 'function') return;
+  var imgs = el.querySelectorAll('img');
   imgs.forEach(function (img) {
     imageLoaded(img.getAttribute('src'), function () {
       scrollToBottom(el, config.smooth);

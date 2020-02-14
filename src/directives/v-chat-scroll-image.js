@@ -27,9 +27,9 @@ const imageLoaded = (src, callback = () => {}) => {
   }
 }
 
-const allImagesLoaded = (node) => {
-  if (typeof node.querySelectorAll !== 'function') return;
-  const imgs = node.querySelectorAll('img');
+const allImagesLoaded = (el) => {
+  if (typeof el.querySelectorAll !== 'function') return;
+  const imgs = el.querySelectorAll('img');
   imgs.forEach(img => {
     imageLoaded(img.getAttribute('src'), () => {
       scrollToBottom(el, config.smooth);
